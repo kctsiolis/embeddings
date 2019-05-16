@@ -10,8 +10,9 @@ with open("coocs/merged.cooc", "r") as f1:
 with open("unigrams/merged.unigram", "r") as f2:
     unigram = f2.readlines()
 
-common_coocs = open("common_coocs_right.txt", "w+")
+common_coocs = open("extended_coocs_left.txt", "w+")
 vocab_size = 50000
+num_coocs = 5
 cooc_dict = dict([(key,[]) for key in range(vocab_size)])
 
 #Function to find the word with the highest weighted coocurrence
@@ -41,11 +42,15 @@ for line in range(len(unigram)):
     if index > 0:
         values = unigram[line].split()
         word = values[1]
-        common = ["","","","",""]
-        for i in range(5):
+        common = [""] * num_coocs
+        common_coocs.write("%d %s: { " %(index,word))
+        for i in range(num_coocs):
             try:
                 common[i] = find_max(cooc_dict,int(values[0]))
             except IndexError:
                 common[i] = ""
-        common_coocs.write("%d %s: {%s ; %s ; %s ; %s ; %s}\n" %(index,word,common[0],common[1],common[2],common[3],common[4]))
+            if i != num_coocs - 1:
+                common_coocs.write("%s ; " %(common[i]))
+            else:
+                common_coocs.write("%s }\n" %(common[i]))
     index+=1
